@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Organizer Utility</title>
+    <!-- This line handles 100% of the styling automatically -->
+    <link rel="stylesheet" href="https://jsdelivr.net">
+</head>
+<body>
+    <main class="container" style="max-width: 600px; margin-top: 40px;">
+        <hgroup>
+            <h1>File Organizer</h1>
+            <p>Clean up messy directories automatically by file type</p>
+        </hgroup>
+
+        <!-- Flash messages for success or error logs -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <article style="padding: 15px; margin-bottom: 20px; border-left: 5px solid {{ 'green' if category == 'success' else 'red' }};">
+                        {{ message }}
+                    </article>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Clean, grid-aligned form -->
+        <form method="POST">
+            <label for="path">
+                Target Folder Path&ensp;
+                <input type="text" id="path" name="path" placeholder="e.g., C:\Users\Username\Downloads" required>
+            </label>
+            <br />
+            <label for="ext">
+                Filter by Extension&ensp;
+                <input type="text" id="ext" name="ext" value=".*" placeholder="e.g., .txt, .pdf, or .* for all">
+            </label>
+
+            <fieldset>
+                <label for="recursive">
+                    <input type="checkbox" id="recursive" name="recursive" role="switch">
+                    Enable Recursive Mode (Include subfolders)
+                </label>
+            </fieldset>
+
+            <button type="submit" class="contrast">Organize Files</button>
+        </form>
+    </main>
+</body>
+</html>

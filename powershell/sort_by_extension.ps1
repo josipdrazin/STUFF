@@ -1,14 +1,17 @@
-$dict=@{}
 $report=@{}
+$sequence_tracker=@{}
 function get_next_num($key, $mod){
-	if (-not($dict.ContainsKey($key))) {
-		$a=1..$mod;$e=$a.GetEnumerator();
-		$dict.Add($key, $e);
+	if (-not($sequence_tracker.ContainsKey($key))) {
+		$sequence_tracker[$key]=0;
 	}
-	$dict[$key].MoveNext() | Out-Null;
-	return $dict[$key].Current
+	if (($sequence_tracker[$key] -lt $mod)) {
+		$sequence_tracker[$key]=$sequence_tracker[$key]+1;
+	}
+	else {
+		$sequence_tracker[$key]=1;
+	}
+	return $sequence_tracker[$key];
 }
-
 function confimation_prompt($title, $msg, $callback){
 	Add-Type -AssemblyName PresentationFramework
 	# 3. Launch the native Windows Yes/No Choice Window box

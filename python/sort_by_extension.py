@@ -3,13 +3,13 @@ from tkinter import messagebox
 report_dict={}
 sequence_tracker={}
 def get_next_number(key, mod):
-    """
-    Generator for appending a (number) upon renaming same named files.
-    Note: It is limited to 64 generated numbers.
-    """
     if key not in sequence_tracker:
-        sequence_tracker[key] = iter(range(1,mod))
-    return next(sequence_tracker[key])
+        sequence_tracker[key] = 1
+    if sequence_tracker[key]<mod:
+        sequence_tracker[key]+=1
+    else:
+        sequence_tracker[key]=1
+    return sequence_tracker[key]
 
 def move_safe(f, npath, ext, entry):
     """

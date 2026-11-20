@@ -1,26 +1,34 @@
 # 1. Initialize the global ASCII table once when AWK starts
 BEGIN {
 	# Core Library Registration (Value = Expected Number of Arguments)
-	valid_functions["abs"] =   1
-	valid_functions["all"] =   1
-	valid_functions["any"] =   1
-	valid_functions["bin"] =   1
-	valid_functions["bool"] =  1
-	valid_functions["chr"] =   1
-	valid_functions["float"] = 1
-	valid_functions["for"] =   1
-	valid_functions["hex"] =   1
-	valid_functions["int"] =   1
-	valid_functions["len"] =   1
-	valid_functions["max"] =   1
-	valid_functions["min"] =   1
-	valid_functions["oct"] =   1
-	valid_functions["ord"] =   1
-	valid_functions["pow"] =   1
-	valid_functions["round"] = 1
-	valid_functions["str"] =   1
-	valid_functions["sum"] =   1
-	valid_functions["echo"] = 1
+	valid_functions["abs"] = 	1
+	valid_functions["all"] = 	1
+	valid_functions["any"] = 	1
+	valid_functions["bin"] = 	1
+	valid_functions["bool"] = 	1
+	valid_functions["chr"] = 	1
+	valid_functions["echo"] = 	1
+	valid_functions["float"] = 	1
+	valid_functions["for"] = 	1
+	valid_functions["hash"] = 	1
+	valid_functions["hex"] = 	1
+	valid_functions["int"] = 	1
+	valid_functions["len"] = 	1
+	valid_functions["max"] = 	1
+	valid_functions["min"] = 	1
+	valid_functions["nextline"] = 	1
+	valid_functions["oct"] = 	1
+	valid_functions["ord"] = 	1
+	valid_functions["pow"] = 	1
+	valid_functions["read"] = 	1
+	valid_functions["readline"] = 	1
+	valid_functions["replace"] = 	1
+	valid_functions["round"] = 	1
+	valid_functions["str"] = 	1
+	valid_functions["sum"] = 	1
+	valid_functions["typeof"] = 	1
+	valid_functions["write"] = 	1
+
 
 	for (i = 1; i <= 255; i++) {
 		char = sprintf("%c", i)
@@ -57,6 +65,20 @@ function native_bool(x) {
 
 function native_chr(n) { return "'" _chr_[n] "'" }
 
+function native_echo(args,    spc, i, total) {
+	total = ""
+	spc = ""
+	for (i = 1; i in args; i++) {
+		if (i > 1) { spc = " " }
+		if (args[i] ~ /^'.*'$/) {
+			total = total spc unquote(args[i])
+		} else {
+			total = total spc args[i]
+		}
+	}
+	return total
+}
+
 function native_float(x) {
 	return x + 0.0
 }
@@ -68,10 +90,9 @@ function native_float(x) {
 # 67 C 0x43
 # 68 D 0x44
 # . . .
-function native_for(args,    cond, assign, var_name, start, stop, step, i, body, out, res) {
+function native_for(args,    cond, assign, var_name, start, stop, step, _, body, res) {
     split(args[1], cond, ";")
     
-    # Support optional variable name: for(x=1;5, ...) or default to "i"
     if (cond[1] ~ /=/) {
         split(cond[1], assign, "=")
         var_name = assign[1]
@@ -82,26 +103,21 @@ function native_for(args,    cond, assign, var_name, start, stop, step, i, body,
     }
     
     stop = eval_expr(cond[2]) + 0
-    step = cond[3] ? (eval_expr(cond[3]) + 0) : 1
+    step = (cond[3] != "") ? (eval_expr(cond[3]) + 0) : 1
     body = args[2]
-
-    # Strip optional { ... } wrapper around the body
     gsub(/^[ \t]*\{|\}[ \t]*$/, "", body)
 
-    out = ""
-    for (i = start; (step > 0 ? i <= stop : i >= stop); i += step) {
-        VARS[var_name] = i
-        if (body != "") {
-            res = eval_expr(body)
-            if (res != "") out = (out == "" ? res : out "\n" res)
-        } else {
-            out = (out == "" ? i : out "\n" i)
+    for (_ = start; (step > 0 ? _ <= stop : _ >= stop); _ += step) {
+        VARS[var_name] = _
+        res = (body != "") ? eval_expr(body) : _
+        if (res != "") {
+            print res
+            fflush()  # Flushes immediately to conhost instead of waiting for the loop to end!
         }
     }
-    delete VARS[var_name] # Clean up loop variable when done
-    return out
+    delete VARS[var_name]
+    return ""
 }
-
 
 function native_hex(x,    sign) {
 	sign = (native_abs(x) != int(x)) ? "-" : ""
@@ -136,6 +152,13 @@ function native_min(args,    i, total) {
 	return total
 }
 
+function native_nextline(filename,    n, line) {
+    n = (load_state("line_" filename) + 0) + 1
+    line = native_readline(filename, n)
+    save_state("line_" filename, n)
+    return line
+}
+
 function native_oct(x,    sign) {
 	sign = (native_abs(x) != int(x)) ? "-" : ""
 	return "'" sign "0o" zpad(sprintf("%o", native_abs(x)), 3) "'"
@@ -147,16 +170,56 @@ function native_pow(base, exponent) {
 	return base ^ exponent
 }
 
-function native_echo(args,    i, total) {
-	total = ""
-	for (i = 1; i in args; i++) {
-		if (args[i] ~ /^'.*'$/) {
-			total = total " " unquote(args[i])
-		} else {
-			total = total " " args[i]
+function native_read(filename,    line, content, is_file) {
+	content = ""
+	is_file = 0
+
+	while ((getline line < filename) > 0) {
+		is_file = 1
+		content = (content == "" ? line : content "\n" line)
+	}
+	close(filename)
+
+	# Fallback: if 'filename' wasn't an existing file, return it as a plain string
+	if (!is_file) {
+		return filename
+	}
+	return content
+}
+
+function native_readline(filename, line_num,    line, n) {
+	if (line_num == "" || line_num < 1) line_num = 1
+	n = 0
+	while ((getline line < filename) > 0) {
+		n++
+		if (n == line_num) {
+			close(filename)
+			return line
 		}
 	}
-	return total
+	close(filename)
+	return ""
+}
+
+function native_replace(source, searchstr, replacestr,    line, content, is_file) {
+	content = ""
+	is_file = 0
+
+	# Try reading 'source' as a file line-by-line
+	while ((getline line < source) > 0) {
+		is_file = 1
+		content = (content == "" ? line : content "\n" line)
+	}
+	close(source) # Always close files in AWK so you don't hit handle limits!
+
+	# If 'source' wasn't an existing file, treat it as a plain string
+	if (!is_file) {
+		content = source
+	}
+
+	# Perform the replacement on 'content' and return the modified text
+	gsub(searchstr, replacestr, content)
+	return content
 }
 
 function native_round(x) {
@@ -181,6 +244,12 @@ function native_sum(args,    i, total) {
 		total += args[i]
 	}
 	return total
+}
+
+function native_write(filename, content) {
+    print content > filename
+    close(filename)
+    return "OK"
 }
 
 function zpad(str, width,    pre) {
@@ -218,26 +287,32 @@ function get_type(raw,    first, last) {
 }
 
 function dispatch(func_name, args) {
-	if (func_name == "abs")   return native_abs(args[1])
-	if (func_name == "all")   return native_all(args)
-	if (func_name == "any")   return native_any(args)
-	if (func_name == "bin")   return native_bin(args[1])
-	if (func_name == "bool")  return (args[1] != "" && args[1] != 0) ? 1 : 0
-	if (func_name == "chr")   return native_chr(args[1])
-	if (func_name == "float") return args[1] + 0.0
-	if (func_name == "echo")   return native_echo(args)
-	if (func_name == "for")   return native_for(args)
-	if (func_name == "hex")   return native_hex(args[1])
-	if (func_name == "int")   return int(args[1])
-	if (func_name == "len")   return native_len(args[1])
-	if (func_name == "min")   return native_min(args)
-	if (func_name == "max")   return native_max(args)
-	if (func_name == "ord")   return native_ord(args[1])
-	if (func_name == "oct")   return native_oct(args[1])
-	if (func_name == "pow")   return native_pow(args[1], args[2])
-	if (func_name == "round") return native_round(args[1])
-	if (func_name == "sum")   return native_sum(args)
-	if (func_name == "str")   return args[1] ""
+	if (func_name == "abs") 	return native_abs(args[1])
+	if (func_name == "all") 	return native_all(args)
+	if (func_name == "any") 	return native_any(args)
+	if (func_name == "bin") 	return native_bin(args[1])
+	if (func_name == "bool") 	return (args[1] != "" && args[1] != 0) ? 1 : 0
+	if (func_name == "chr") 	return native_chr(args[1])
+	if (func_name == "float") 	return args[1] + 0.0
+	if (func_name == "echo") 	return native_echo(args)
+	if (func_name == "for") 	return native_for(args)
+	if (func_name == "hex") 	return native_hex(args[1])
+	if (func_name == "int") 	return int(args[1])
+	if (func_name == "len") 	return native_len(args[1])
+	if (func_name == "min") 	return native_min(args)
+	if (func_name == "max") 	return native_max(args)
+	if (func_name == "nextline") 	return native_nextline(args[1])
+	if (func_name == "ord") 	return native_ord(args[1])
+	if (func_name == "oct") 	return native_oct(args[1])
+	if (func_name == "pow") 	return native_pow(args[1], args[2])
+	if (func_name == "read") 	return native_read(args[1])
+	if (func_name == "readline") 	return native_readline(args[1], args[2])
+	if (func_name == "replace") 	return native_replace(args[1], args[2], args[3])
+	if (func_name == "round") 	return native_round(args[1])
+	if (func_name == "sum") 	return native_sum(args)
+	if (func_name == "str") 	return args[1] ""
+	if (func_name == "typeof") 	return get_type(args[1])
+	if (func_name == "write") 	return native_write(args[1], args[2])
 
     
     return "ERR: Function defined in table, but missing in dispatcher."
@@ -316,6 +391,41 @@ function unquote(str) {
 	}
 	return str
 }
+
+function save_state(key, val,    sf, line, k, v, found, out) {
+    sf = "C:\\Users\\KAZAN\\interpreter\\awk\\state.txt"
+    found = 0; out = ""
+
+    while ((getline line < sf) > 0) {
+        split(line, kv, "=")
+        if (kv[1] == key) {
+            out = (out == "" ? key "=" val : out "\n" key "=" val)
+            found = 1
+        } else if (line != "") {
+            out = (out == "" ? line : out "\n" line)
+        }
+    }
+    close(sf)
+
+    if (!found) {
+        out = (out == "" ? key "=" val : out "\n" key "=" val)
+    }
+    print out > sf
+    close(sf)
+    return val
+}
+
+function load_state(key,    sf, line, kv, val) {
+    sf = "C:\\Users\\KAZAN\\interpreter\\awk\\state.txt"
+    val = ""
+    while ((getline line < sf) > 0) {
+        split(line, kv, "=")
+        if (kv[1] == key) { val = kv[2]; break }
+    }
+    close(sf)
+    return val
+}
+
 
 # 1. Load definitions from the file first
 NR == FNR {

@@ -1,0 +1,1 @@
+#=@echo $* $B mawk -F"[(),]" -f interpreter.awk def.mawk -

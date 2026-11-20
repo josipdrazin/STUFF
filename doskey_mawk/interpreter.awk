@@ -9,7 +9,6 @@ BEGIN {
 	valid_functions["chr"] =   1
 	valid_functions["float"] = 1
 	valid_functions["for"] =   1
-	valid_functions["hash"] =  1
 	valid_functions["hex"] =   1
 	valid_functions["int"] =   1
 	valid_functions["len"] =   1

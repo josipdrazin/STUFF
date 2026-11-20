@@ -61,8 +61,8 @@ function native_float(x) {
 	return x + 0.0
 }
 # ADDED FOR (START;STOP;[STEP],[DO STUFF],[DO STUFF],,,,,)
-# DEFAULT LOOP VARIABLE IS UNDERSCORE '_' 
-# _ for(65;255,echo(_,chr(_),hex(_)))
+# DEFAULT LOOP VARIABLE IS HASH '#' 
+# _ for(65;255,echo(#,chr(#),hex(#)))
 # 65 A 0x41
 # 66 B 0x42
 # 67 C 0x43
@@ -77,7 +77,7 @@ function native_for(args,    cond, assign, var_name, start, stop, step, i, body,
         var_name = assign[1]
         start    = eval_expr(assign[2]) + 0
     } else {
-        var_name = "_"
+        var_name = "#"
         start    = eval_expr(cond[1]) + 0
     }
     
@@ -89,8 +89,8 @@ function native_for(args,    cond, assign, var_name, start, stop, step, i, body,
     gsub(/^[ \t]*\{|\}[ \t]*$/, "", body)
 
     out = ""
-    for (_ = start; (step > 0 ? _ <= stop : _ >= stop); _ += step) {
-        VARS[var_name] = _
+    for (i = start; (step > 0 ? i <= stop : i >= stop); i += step) {
+        VARS[var_name] = i
         if (body != "") {
             res = eval_expr(body)
             if (res != "") out = (out == "" ? res : out "\n" res)

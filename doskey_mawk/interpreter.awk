@@ -61,7 +61,8 @@ function native_chr(n) { return "'" _chr_[n] "'" }
 function native_float(x) {
 	return x + 0.0
 }
-
+# not very useful since all i did was parsed starting syntax `for(start;stop;step)`
+# it is kind of hard to get args[2] functional and also need to somehow expose the `i` variable to the next arguments
 function native_for(args) {
 	split(args[1],cond,";")
 	start=cond[1]
@@ -192,8 +193,6 @@ function eval_expr(expr,    fn, raw_args, parts, args, n, i, res, prefix, suffix
 		}
 
 		# Split inner arguments by comma and clean them
-		# TODO: omit ord from unquoting for error expressions, 
-		# ord("c") => error, ord('c') => good 
 		delete args
 		if (substr(raw_args, 0, 1) != "{" and substr(raw_args, length(raw_args)-2, length(raw_args)-1) != "}") {
 			n = split(raw_args, parts, ",")

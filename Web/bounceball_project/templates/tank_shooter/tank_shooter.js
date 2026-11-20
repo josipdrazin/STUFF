@@ -1,0 +1,265 @@
+// ELEMENTS CREATION
+document.body.appendChild(Object.assign(document.createElement("h2"), {innerText: "Tank Shooter Practice"}));
+document.body.appendChild(Object.assign(document.createElement("p"), { innerText: "Arrow keys move. Space shoots."}));
+document.body.appendChild(Object.assign(document.createElement("canvas"), {id: "game", width: "416", height: "416"}));
+const controlsElement = Object.assign(document.createElement("div"), {id: "touchControls"});
+controlsElement.appendChild(Object.assign(document.createElement("button"), {data-dir: "up", textContent: "⬆️"}));
+controlsElement.appendChild(Object.assign(document.createElement("button"), {data-dir: "shoot", textContent: "🔥"}));
+controlsElement.appendChild(Object.assign(document.createElement("button"), {data-dir: "left", textContent: "⬅️"}));
+controlsElement.appendChild(Object.assign(document.createElement("button"), {style: "visibility:hidden"}));
+controlsElement.appendChild(Object.assign(document.createElement("button"), {data-dir: "right", textContent: "➡️"}));
+controlsElement.appendChild(Object.assign(document.createElement("button"), {data-dir: "down", textContent: "⬇️"}));
+document.body.appendChild(controlsElement);
+
+
+
+
+// =============================
+// CONFIG
+// =============================
+const TILE_SIZE = 32;
+const COLS = 13;
+const ROWS = 13;
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+// =============================
+// SPRITE SYSTEM (easy upgrade)
+// =============================
+
+const spriteConfig = {
+  useSprites:false, // switch to true when bitmap sprites are added
+};
+
+const sprites = {
+  tank:null,
+  wall:null,
+  bullet:null
+};
+
+function loadSprites(){
+  return new Promise(resolve=>{
+    if(!spriteConfig.useSprites){
+      resolve();
+      return;
+    }
+
+    let loaded=0;
+    const needed=3;
+
+    function done(){
+      loaded++;
+      if(loaded===needed)resolve();
+    }
+
+    sprites.tank = new Image();
+    sprites.tank.src = "sprites/tank.png";
+    sprites.tank.onload = done;
+
+    sprites.wall = new Image();
+    sprites.wall.src = "sprites/wall.png";
+    sprites.wall.onload = done;
+
+    sprites.bullet = new Image();
+    sprites.bullet.src = "sprites/bullet.png";
+    sprites.bullet.onload = done;
+  });
+}
+
+// =============================
+// MAP
+// =============================
+
+const map=[
+[1,1,1,1,1,1,1,1,1,1,1,1,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,1,1,0,1,0,1,1,0,1,0,1],
+[1,0,0,0,0,1,0,0,0,0,1,0,1],
+[1,0,1,0,0,0,0,1,0,0,0,0,1],
+[1,0,1,0,1,1,0,1,0,1,1,0,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,1,1,0,1,0,1,1,0,1,0,1],
+[1,0,0,0,0,1,0,0,0,0,1,0,1],
+[1,0,1,0,0,0,0,1,0,0,0,0,1],
+[1,0,1,0,1,1,0,1,0,1,1,0,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,1,1,1,1,1,1,1,1,1,1,1,1]
+];
+
+// =============================
+// GAME STATE
+// =============================
+
+const player={
+  x:1,
+  y:1,
+  dir:0
+};
+
+const bullets=[];
+
+// =============================
+// INPUT (Keyboard + Touch)
+
+// =============================
+
+const keys={};
+
+// Touch support
+const touchMap={up:'ArrowUp',down:'ArrowDown',left:'ArrowLeft',right:'ArrowRight'};
+document.querySelectorAll('#touchControls button').forEach(btn=>{
+  const dir=btn.dataset.dir;
+  if(!dir)return;
+  btn.addEventListener('touchstart',e=>{
+    e.preventDefault();
+    if(dir==='shoot'){shoot();return;}
+    keys[touchMap[dir]]=true;
+  });
+  btn.addEventListener('touchend',e=>{
+    e.preventDefault();
+    if(dir==='shoot')return;
+    keys[touchMap[dir]]=false;
+  });
+});
+
+
+window.addEventListener('keydown',e=>keys[e.code]=true);
+window.addEventListener('keyup',e=>keys[e.code]=false);
+
+window.addEventListener('keydown',e=>{
+  if(e.code==='Space') shoot();
+});
+
+// =============================
+// GAME LOGIC
+// =============================
+
+function shoot(){
+  bullets.push({
+    x:player.x+0.5,
+    y:player.y+0.5,
+    dir:player.dir
+  });
+}
+
+function update(){
+
+  let nx=player.x;
+  let ny=player.y;
+
+  if(keys['ArrowUp']){ny-=0.1;player.dir=0}
+  if(keys['ArrowDown']){ny+=0.1;player.dir=1}
+  if(keys['ArrowLeft']){nx-=0.1;player.dir=2}
+  if(keys['ArrowRight']){nx+=0.1;player.dir=3}
+
+  if(map[Math.floor(ny)][Math.floor(nx)]===0){
+    player.x=nx;
+    player.y=ny;
+  }
+
+  bullets.forEach(b=>{
+    if(b.dir===0)b.y-=0.2;
+    if(b.dir===1)b.y+=0.2;
+    if(b.dir===2)b.x-=0.2;
+    if(b.dir===3)b.x+=0.2;
+  });
+}
+
+// =============================
+// DRAW HELPERS
+// =============================
+
+function drawWall(x,y){
+
+  if(spriteConfig.useSprites && sprites.wall){
+    ctx.drawImage(sprites.wall,x*TILE_SIZE,y*TILE_SIZE,TILE_SIZE,TILE_SIZE);
+  }else{
+    ctx.fillStyle='#666';
+    ctx.fillRect(x*TILE_SIZE,y*TILE_SIZE,TILE_SIZE,TILE_SIZE);
+  }
+}
+
+function drawTank(){
+
+  const px=player.x*TILE_SIZE;
+  const py=player.y*TILE_SIZE;
+
+  if(spriteConfig.useSprites && sprites.tank){
+
+    ctx.save();
+    ctx.translate(px,py);
+
+    const angle=[0,Math.PI, -Math.PI/2, Math.PI/2][player.dir];
+    ctx.rotate(angle);
+
+    ctx.drawImage(sprites.tank,-16,-16,32,32);
+
+    ctx.restore();
+
+  }else{
+    ctx.fillStyle='lime';
+    ctx.fillRect(px-10,py-10,20,20);
+  }
+}
+
+function drawBullet(b){
+
+  const px=b.x*TILE_SIZE;
+  const py=b.y*TILE_SIZE;
+
+  if(spriteConfig.useSprites && sprites.bullet){
+    ctx.drawImage(sprites.bullet,px-4,py-4,8,8);
+  }else{
+    ctx.fillStyle='yellow';
+    ctx.fillRect(px-3,py-3,6,6);
+  }
+}
+
+// =============================
+// RENDER
+// =============================
+
+function draw(){
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  for(let y=0;y<ROWS;y++){
+    for(let x=0;x<COLS;x++){
+      if(map[y][x]===1){
+        drawWall(x,y);
+      }
+    }
+  }
+
+  drawTank();
+
+  bullets.forEach(drawBullet);
+}
+
+// =============================
+// GAME LOOP
+// =============================
+
+function loop(){
+
+  update();
+  draw();
+
+  requestAnimationFrame(loop);
+}
+
+// =============================
+// START
+// =============================
+
+loadSprites().then(()=>{
+  loop();
+});
+
+// =============================
+// AI / CV HOOKS
+// =============================
+
+window.getGameState=()=>({player,bullets,map});
+window.getCanvas=()=>canvas;

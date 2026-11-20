@@ -1,0 +1,59 @@
+body { 
+    display: block;
+    margin: 0;
+    height: 100vh;
+    background: #111;
+    color: white;
+    font-family: Arial;
+}
+
+#start-screen {
+    margin: 0;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    background: #111;
+    color: white;
+    font-family: Arial;
+    background: url("/static/sweet_match/start-bg.webp") no-repeat center center;
+    background-size: cover;
+}
+#overlay {
+    grid-row: 2;
+    justify-self: center;
+    justify-content: center;
+}
+
+/* Play Button */
+#play-btn {
+    width: 75vw;
+    font-size: 160px;
+    font-weight: 1000;
+    border-radius: 64px;
+    border: none;
+    background: linear-gradient(to bottom, #ffb347, #ff7a00);
+    color: beige;
+    cursor: pointer;
+    box-shadow:
+        0 8px 0 #c75a00,
+        0 12px 20px rgba(0,0,0,0.3);
+    transition: 0.3s ease;
+    text-shadow: 
+    -2px -2px 0 #000,
+     2px -2px 0 #000,
+    -2px  2px 0 #000,
+     2px  2px 0 #000;
+}
+
+
+/* Press effect */
+#play-btn:active {
+    transform: translateY(6px);
+    box-shadow:
+        0 2px 0 #c75a00,
+        0 6px 10px rgba(0,0,0,0.3);
+}
+
+.hidden {
+    display: none;
+}

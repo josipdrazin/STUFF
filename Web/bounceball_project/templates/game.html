@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<!-- PREVENT ZOOM - STANDARD WAY -->
+<!-- (WORKS IN MOST BROWSERS) -->
+<meta name="viewport" content="user-scalable=no">
+
+<title>{{ game.title }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename=game.game_identifier + '/style.css') }}">
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+}
+canvas {
+    display: block;
+}
+</style
+</head>
+<body>
+<div id="start-screen">
+<div id="overlay">
+    <button id="play-btn">
+        Play
+    </button>
+</div>
+</div>
+<div id="app"></div>
+<script type="module" src="{{ url_for('static', filename=game.game_identifier + '/main.js') }}">
+;
+</script>
+<script id="main"></script>
+<script>
+const gameIdentifier = "{{ game.game_identifier }}";
+  function play() {
+
+    
+    const style = document.querySelector('link[rel="stylesheet"]');
+    style.href = "/static/css/{{ game.game_identifier }}.css";
+    document.getElementById("start-screen")?.remove();
+
+
+  }
+  document.getElementById("play-btn").addEventListener("click", play);
+
+</script>
+
+</body>
+</html>

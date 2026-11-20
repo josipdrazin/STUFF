@@ -1,0 +1,73 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #111;
+    touch-action: none;
+    user-select: none;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+canvas {
+    display: block;
+    background: linear-gradient(#1e1e1e, #000);
+}
+#elevation {
+    position: fixed;
+    top: 75px;
+    right: 20px;
+    font-size: 18px;
+}
+#energyContainer {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    width: 220px;
+    height: 60px;
+    background-color: #333;
+}
+#energyBar {
+    height: 20px;
+    width: 100%;
+    border: 2px solid white;
+    background: limegreen;
+}
+#energy {
+    width: 100%;
+	   font-size: 22px;
+	   font-weight: bold;
+}
+#score {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    font-size: 22px;
+    font-weight: bold;
+}
+#highscore {
+    position:fixed;
+    top:45px;
+    right:20px;
+    font-size:20px;
+}
+
+
+
+#logElement {
+  position: fixed;
+  top: 40%;
+  
+  width: 100vw;
+  height: 20vh;
+  background: red;
+  color: black;
+  font-family: monospace;
+  z-index: 9999;
+  overflow: auto;
+  margin: 0;
+  padding: 10px 0;
+  white-space: pre-line;
+  text-align: center;float:right;
+}
+
+

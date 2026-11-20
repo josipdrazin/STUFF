@@ -1,0 +1,116 @@
+/* ============================= */
+/* GLOBAL */
+/* ============================= */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #111;
+    color: white;
+    font-family: sans-serif;
+
+    /* Prevent page scrolling */
+    overflow: hidden;
+
+    /* Center everything */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* ============================= */
+/* HEADINGS */
+/* ============================= */
+
+h2 {
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+
+/* ============================= */
+/* CANVAS */
+/* ============================= */
+
+canvas {
+
+    background: #000;
+
+    border: 2px solid #555;
+
+    margin-top: 10px;
+
+    /* Disable gestures like zoom on mobile */
+    touch-action: none;
+    user-select: none;
+
+}
+
+
+/* ============================= */
+/* TOUCH CONTROLS */
+/* ============================= */
+
+#touchControls {
+
+    margin-top: 15px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 60px);
+    gap: 10px;
+
+    justify-content: center;
+
+}
+
+
+/* Buttons inside touch controls */
+
+#touchControls button {
+
+    height: 50px;
+
+    font-size: 18px;
+
+    background: #222;
+    color: white;
+
+    border: 2px solid #444;
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    /* Remove selection highlight on mobile */
+    -webkit-tap-highlight-color: transparent;
+
+}
+
+
+/* Button press effect */
+
+#touchControls button:active {
+
+    background: #555;
+
+}
+
+
+/* ============================= */
+/* UTIL CLASSES */
+/* ============================= */
+
+.hidden {
+    display: none;
+}
+
+#overlay {
+    display: none;
+}

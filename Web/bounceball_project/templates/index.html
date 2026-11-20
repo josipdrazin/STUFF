@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bounce Ball Climber</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+body {
+    background: #eee;
+    color: #666;
+    line-height: 1.6;
+    padding: 40px 20px;
+    max-width: 900px;
+    margin: auto;
+    font-family: Arial;
+    font-size: 32px;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 80px;
+border:1px solid black;
+}
+nav {
+    margin-left: auto;
+    font-size: 32px;
+    border:1px solid black;
+    }
+</style>
+
+</head>
+<body>
+<header>
+    <div><h1><strong>Jozine Avanture</strong></h1></div>
+    <nav>
+        <a href="#games">Games</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
+<section id="games">
+    <h1>Available Games</h1>
+
+<div id="games-container">
+    {% for game in games %}
+        <div class="game-card">
+            <h2>{{ game.title }}</h2>
+            <p>{{ game.description }}</p>
+
+            <button onclick="play('{{ game.game_identifier }}')">
+                PLAY
+            </button>
+        </div>
+    {% endfor %}
+</div>
+
+</section>
+<script>
+const username = "Jozo";
+function play(gameid) {
+    if (!username) return alert("Enter username");
+
+    fetch("/submit_username", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ username: username,
+            game_identifier: gameid })
+    })
+    .then(res => res.json())
+    .then(data => {
+console.log("User saved:", data);
+        localStorage.setItem("username", username);
+        window.location.href = "/game/" + gameid;
+    });
+}
+</script>
+
+</body>
+</html>

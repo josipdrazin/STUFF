@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bounce Ball Climber</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="start-screen">
+
+<div class="overlay">
+<input type="text" class="username" placeholder="Enter username" />
+<button class="play-btn" onclick="startGame()">PLAY</button>
+</div>
+<script>
+function startGame() {
+    const username = document.getElementById("username").value.trim();
+    if (!username) return alert("Enter username");
+
+    fetch("/submit_username", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ username })
+    })
+    .then(res => res.json())
+    .then(data => {
+        localStorage.setItem("username", username);
+        window.location.href = "/game/bounce_ball_climber";
+    });
+}
+</script>
+
+</body>
+</html>

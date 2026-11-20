@@ -1,0 +1,22 @@
+[
+  {
+    "game_identifier": "bounce_ball_climber",
+    "title": "Bounce Ball Climber",
+    "description": "Jump and survive",
+    "js_file": "bounce_ball_climber.js"
+  },
+
+  {
+    "game_identifier": "sweet_match",
+    "title": "Sweet Match",
+    "description": "Match sweets and earn points.",
+    "js_file": "sweet_match.js"
+  },
+
+  {
+    "game_identifier": "tank_shooter",
+    "title": "Tank Shooter",
+    "description": "Tank Pathfinding and Shooting Practice. ",
+    "js_file": "tank_shooter.js"
+  }
+]

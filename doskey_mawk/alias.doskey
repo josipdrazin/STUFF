@@ -1,1 +1,4 @@
-#=@echo $* $B mawk -F"[(),]" -f interpreter.awk def.mawk -
+FOR Command Prompt
+doskey _=@echo $* $B mawk -F"[(),]" -f /path/to/interpreter.awk /path/to/def.awk -
+FOR PowerShell
+function _(){ $raw = $MyInvocation.Line -replace '^\s*maw\s+', '';$raw | mawk -F"[(),]" -f /path/to/interpreter.awk /path/to/def.awk -}

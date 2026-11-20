@@ -62,6 +62,16 @@ function native_float(x) {
 	return x + 0.0
 }
 
+function native_for(args) {
+	split(args[1],cond,";")
+	start=cond[1]
+	stop=cond[2]
+	step=cond[3] ? cond[3] : 1
+	for (i = start; i <= stop; i+=step) {
+		print i
+	}
+}
+
 function native_hex(x,    sign) {
 	sign = (native_abs(x) != int(x)) ? "-" : ""
 	return "'" sign "0x" zpad(sprintf("%x", native_abs(x)), 2) "'"
@@ -148,6 +158,7 @@ function dispatch(func_name, args) {
 	if (func_name == "bool")  return (args[1] != "" && args[1] != 0) ? 1 : 0
 	if (func_name == "chr")   return native_chr(args[1])
 	if (func_name == "float") return args[1] + 0.0
+    if (func_name == "for")   return native_for(args)
 	if (func_name == "hex")   return native_hex(args[1])
 	if (func_name == "int")   return int(args[1])
 	if (func_name == "len")   return native_len(args[1])

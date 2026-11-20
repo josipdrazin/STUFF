@@ -53,6 +53,7 @@ You can either:
 ```
 function _(){ $raw = $MyInvocation.Line -replace '^\s*maw\s+', '';$raw | mawk -F"[(),]" -f /path/to/interpreter.awk /path/to/def.awk -}
 ```
+Or use the _.bat / _.cmd alternatively.
 Although Powershell is a little less restrictive, but inside conhost environment it impossible to get rid of all quirks.
 Anyway, piping works but with a little extra values. For example ```"_ ord(c)" | clip``` will append ```"99" | clip``` to clipboard
 So, again, the .bat / .cmd wins again...

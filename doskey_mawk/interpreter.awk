@@ -62,8 +62,6 @@ function native_float(x) {
 	return x + 0.0
 }
 
-function native_for(n) { return 0 }
-
 function native_hex(x,    sign) {
 	sign = (native_abs(x) != int(x)) ? "-" : ""
 	return "'" sign "0x" zpad(sprintf("%x", native_abs(x)), 2) "'"
@@ -142,61 +140,6 @@ function zpad(str, width,    pre) {
     return str
 }
 
-function lshift(x, n) {
-    return int(x) * (2 ^ int(n))
-}
-
-function rshift(x, n) {
-    return int(int(x) / (2 ^ int(n)))
-}
-
-# Matches JavaScript's signed 32-bit `x << n`
-function js_lshift(x, n,    res) {
-    n = int(n) % 32
-    if (n < 0) n += 32
-    res = (int(x) * (2 ^ n)) % 4294967296
-    if (res < 0) res += 4294967296
-    return (res >= 2147483648) ? res - 4294967296 : res
-}
-
-# Matches JavaScript's unsigned 32-bit `x >>> n`
-function js_urshift(x, n,    u) {
-    n = int(n) % 32
-    if (n < 0) n += 32
-    u = int(x) % 4294967296
-    if (u < 0) u += 4294967296
-    return int(u / (2 ^ n))
-}
-
-function ps_eval(expr,    cmd, out) {
-    cmd = "powershell -NoProfile -Command \"(" expr ").GetType().Name\""
-    if ((cmd | getline out) <= 0) {
-        out = "error"
-    }
-    close(cmd)
-    return out
-}
-
-# Call this for single values: typeof("1.4") or typeof("")
-function typeof(args,    i, n, raw) {
-    n = length(args)
-    raw = ""
-    for (i = 1; i <= n; i++) {
-        raw = raw (i > 1 ? "," : "") args[i]
-    }
-
-    # If multiple comma-separated items were passed (e.g. typeof(1, 2, 3))
-    # AND they aren't already wrapped in [...] or {...}, wrap them in [...]
-    if (n > 1 && raw !~ /^[ \t]*[\[\{].*[\]\}][ \t]*$/) {
-        raw = "[" raw "]"
-    }
-
-    # Escape any internal quotes for Windows cmd.exe
-    gsub(/"/, "\\\"", raw)
-
-    return system("typeof.exe \"" raw "\"")
-}
-
 function dispatch(func_name, args) {
 	if (func_name == "abs")   return native_abs(args[1])
 	if (func_name == "all")   return native_all(args)
@@ -216,7 +159,6 @@ function dispatch(func_name, args) {
 	if (func_name == "round") return native_round(args[1])
 	if (func_name == "sum")   return native_sum(args)
 	if (func_name == "str")   return args[1] ""
-	if (func_name == "typeof") return typeof(args)
 
     
     return "ERR: Function defined in table, but missing in dispatcher."

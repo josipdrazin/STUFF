@@ -22,7 +22,6 @@ BEGIN {
 	valid_functions["pow"] = 	1
 	valid_functions["read"] = 	1
 	valid_functions["readline"] = 	1
-	valid_functions["replace"] = 	1
 	valid_functions["round"] = 	1
 	valid_functions["str"] = 	1
 	valid_functions["sum"] = 	1
@@ -201,27 +200,6 @@ function native_readline(filename, line_num,    line, n) {
 	return ""
 }
 
-function native_replace(source, searchstr, replacestr,    line, content, is_file) {
-	content = ""
-	is_file = 0
-
-	# Try reading 'source' as a file line-by-line
-	while ((getline line < source) > 0) {
-		is_file = 1
-		content = (content == "" ? line : content "\n" line)
-	}
-	close(source) # Always close files in AWK so you don't hit handle limits!
-
-	# If 'source' wasn't an existing file, treat it as a plain string
-	if (!is_file) {
-		content = source
-	}
-
-	# Perform the replacement on 'content' and return the modified text
-	gsub(searchstr, replacestr, content)
-	return content
-}
-
 function native_round(x) {
     if (x >= 0) {
         if (x + 0.5 >= int(x) + 1) {
@@ -307,7 +285,6 @@ function dispatch(func_name, args) {
 	if (func_name == "pow") 	return native_pow(args[1], args[2])
 	if (func_name == "read") 	return native_read(args[1])
 	if (func_name == "readline") 	return native_readline(args[1], args[2])
-	if (func_name == "replace") 	return native_replace(args[1], args[2], args[3])
 	if (func_name == "round") 	return native_round(args[1])
 	if (func_name == "sum") 	return native_sum(args)
 	if (func_name == "str") 	return args[1] ""

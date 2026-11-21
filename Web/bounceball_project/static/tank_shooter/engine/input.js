@@ -25,6 +25,9 @@ export class Input {
     if (this.keyboardInitialized) return;
 
     window.addEventListener("keydown", e => {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"].includes(e.code)) {
+        e.preventDefault();
+      }
 
       if (!this.keys[e.code]) {
         this.justPressed[e.code] = true;

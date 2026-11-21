@@ -10,10 +10,13 @@ export class BellyBar {
 
     this.bellyBarElement.appendChild(this.bellyFillElement);
     document.getElementById( "app" ).appendChild(this.bellyBarElement);
+
+    this.maxval=0;
   }
 
   update(percent) {
-    this.bellyFillElement.style.width = percent + "%";
+    const clamped = Math.max(0, Math.min(100, percent));
+    this.bellyFillElement.style.width = clamped + "%";
   }
 
 }

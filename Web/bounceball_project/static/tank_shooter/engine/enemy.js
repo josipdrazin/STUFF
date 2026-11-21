@@ -62,7 +62,7 @@ export class EnemyTank extends Tank {
     }
 
     if (this.path.length > 0) {
-      const target = this.path;
+      const target = this.path[0];
       const dx = target.x - this.x;
       const dy = target.y - this.y;
 

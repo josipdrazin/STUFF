@@ -37,7 +37,7 @@ $script:ENERGY_BAR_WIDTH = 200
 $script:ENERGY_BAR_HEIGHT = 16
 $script:GAME_STATE = [PSObject]@{
     RUNNING 	= "running"
-    PAUSED 	= "paused"
+    PAUSED 		= "paused"
     GAMEOVER 	= "gameover"
 }
 
@@ -687,15 +687,15 @@ class Ball {
 	[bool]$boostQueued
 
 	Ball([object]$game) {
-		$this.game 		= $game
-		$this.x 		= $game.canvas.ClientSize.Width / 2
-		$this.y 		= $game.canvas.ClientSize.Height / 1.5
-		$this.radius		= $script:BALL_RADIUS
-		$this.vy 		= -600
-		$this.gravity 		= 1300
+		$this.game 				= $game
+		$this.x 				= $game.canvas.ClientSize.Width / 2
+		$this.y 				= $game.canvas.ClientSize.Height / 1.5
+		$this.radius			= $script:BALL_RADIUS
+		$this.vy 				= -600
+		$this.gravity 			= 1300
 		$this.boostAvailable 	= $false
-		$this.boostQueued 	= $false
-		$this.prevY 		= $this.y
+		$this.boostQueued 		= $false
+		$this.prevY 			= $this.y
 	}
 
 	[void] update([double]$delta) {
@@ -804,17 +804,17 @@ class Platform {
 	[bool]$isDrawn
 
 	Platform([object]$game, [double]$x, [double]$y, [hashtable]$options) {
-		$this.game 		= $game
-		$this.x 		= $x
-		$this.y 		= $y
+		$this.game 			= $game
+		$this.x 			= $x
+		$this.y 			= $y
 		$this.width 		= if ($options.ContainsKey("width")) {$options.width} else {$script:PLATFORM_WIDTH}
 		$this.height 		= if ($options.ContainsKey("height")) {$options.height} else {$script:PLATFORM_HEIGHT}
 		$this.moving 		= if ($options.ContainsKey("moving")) {$options.moving} else {$false}
 		$this.speed 		= if ($options.ContainsKey("speed")) {$options.speed} else {0}
 		$this.direction 	= 1
-		$this.type 		= if ($options.ContainsKey("type")) {$options.type} else {"static"}
-		$this.id 		= $options.id
-		$this.energyGranted 	= $false
+		$this.type 			= if ($options.ContainsKey("type")) {$options.type} else {"static"}
+		$this.id 			= $options.id
+		$this.energyGranted = $false
 		$this.isDrawn 		= $false
 	}
 
@@ -956,34 +956,32 @@ class Game {
 	[double]$lastTime
 	[bool]$gameOver
 	Game() {
-		$this.form = New-Object System.Windows.Forms.Form
-$this.form.Text = "Bounce Ball Climber"
-$this.form.ClientSize = New-Object System.Drawing.Size(480, 640)
-$this.form.FormBorderStyle = 'FixedSingle'
-$this.form.MaximizeBox = $false
+		$this.form 					= New-Object System.Windows.Forms.Form
+		$this.form.Text 			= "Bounce Ball Climber"
+		$this.form.ClientSize 		= New-Object System.Drawing.Size(480, 640)
+		$this.form.FormBorderStyle 	= 'FixedSingle'
+		$this.form.MaximizeBox 		= $false
+		$this.canvas 				= New-Object System.Windows.Forms.PictureBox
+		$this.canvas.Dock 			= 'Fill'
+		$this.form.Controls.Add($this.canvas)
+		$this.ctx 					= [Canvas2D]::new()
+		$this.background 			= [Background]::new($this)
+		$this.camera 				= [CameraSystem]::new($this)
+		$this.platformManager 		= [PlatformManager]::new($this)
+		$this.collectibleManager 	= [CollectibleManager]::new($this)
+		$this.input 				= [InputManager]::new($this)
+		$this.energyManager 		= [EnergyManager]::new($this)
+		$this.timeManager 			= [TimeManager]::new($this)
+		$this.scoreManager 			= [ScoreManager]::new($this)
+		$this.score 				= $this.scoreManager.score
+		$this.energy 				= $this.energyManager.energy.toString("F2")
+		$this.elevation 			= 1
+		$this.UI 					= [UI]::new($this)
+		$this.ball 					= [Ball]::new($this)
 
-$this.canvas = New-Object System.Windows.Forms.PictureBox
-$this.canvas.Dock = 'Fill'
-$this.form.Controls.Add($this.canvas)
-
-# Make sure this line is present in Game():
-$this.ctx = [Canvas2D]::new()
-		$this.UI = [UI]::new($this);
-		$this.background = [Background]::new($this);
-		$this.camera = [CameraSystem]::new($this);
-		$this.platformManager = [PlatformManager]::new($this);
-		$this.collectibleManager = [CollectibleManager]::new($this);
-		$this.input = [InputManager]::new($this);
-		$this.energyManager = [EnergyManager]::new($this);
-		$this.timeManager = [TimeManager]::new($this);
-		$this.scoreManager = [ScoreManager]::new($this);
-		$this.score = $this.scoreManager.score;
-		$this.energy = $this.energyManager.energy.toString("F2");
-		$this.elevation = 1; #//this.platformManager.passedPlatforms * this.platformManager.verticalGap;
-		$this.gameOver = $false;
-		$this.ball = [Ball]::new($this)
-		$this.lastTime = $this.timeManager.lastTimestamp;
-		$self = $this
+		$this.lastTime 	= $this.timeManager.lastTimestamp
+		$this.gameOver 	= $false
+		$self 		= $this
 
     # Wire up Paint ONCE
     $this.canvas.Add_Paint({

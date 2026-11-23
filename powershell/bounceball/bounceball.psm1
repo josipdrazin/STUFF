@@ -45,17 +45,6 @@ function chance([double]$probability) {
     return ($script:rng.NextDouble() -lt $probability)
 }
 
-function circleCollision([double]$x1, [double]$y1, [double]$r1, [double]$x2, [double]$y2, [double]$r2) {
-	$dist = distance($x1, $y1, $x2, $y2);
-	return $dist -lt ($r1 + $r2);
-}
-
-function distance([double]$x1, [double]$y1, [double]$x2, [double]$y2) {
-	$dx = $x2 - $x1;
-	$dy = $y2 - $y1;
-	return [Math]::Sqrt($dx * $dx + $dy * $dy);
-}
-
 $script:rng = [System.Random]::new()
 
 class CanvasGradient {

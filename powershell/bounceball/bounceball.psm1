@@ -1404,7 +1404,7 @@ class Game {
 		$items = Get-Content -Path $jsonPath -Raw | ConvertFrom-Json
 		foreach ($item in $items) {
 			if (-not $item.enabled) { continue }
-			Write-Host $featuresDir
+
 			# Safely check if the subclass exists in PowerShell (returns $null if not coded yet)
 			$featureType = $item.type -as [type]
 			if ($null -eq $featureType) {
@@ -1416,7 +1416,6 @@ class Game {
 			$config = @{}
 			foreach ($prop in $item.PSObject.Properties) {
 				$config[$prop.Name] = $prop.Value
-				Write-Host $prop
 			}
 		
 			$feature = $featureType::new($this, $config)
@@ -1424,7 +1423,5 @@ class Game {
 			$this.features.Add($feature)
 			
 		}
-		Write-Host "Loaded features: $($this.features.Count)"
-		Write-Host "Loaded features: $($this.features.type)"
 	}
 }

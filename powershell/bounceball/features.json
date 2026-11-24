@@ -1,0 +1,13 @@
+[
+	{
+		"type": "PlatformWobbleFeature",
+		"enabled": true,
+		"wobbleAmplitude": 10,
+		"wobbleSpeed": 28,
+		"wobbleDuration": 0.45
+	},
+	{
+		"type": "MovingPlatformFeature",
+		"enabled": true
+	}
+]

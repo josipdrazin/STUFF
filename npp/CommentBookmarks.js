@@ -65,19 +65,6 @@ function TemplateDockablePanel(opts) {
 		'</body></html>'
 	);
 	doc.close();
-	if (typeof log === "function") {
-	win.log = log;
-}
-Object.prototype._jnPanels = Object.prototype._jnPanels || {};
-Object.prototype._jnPanels[opts.name || "Custom Panel"] = self;
-
-if (typeof logDock !== "undefined") {
-	logDock.refresh();
-	logDock.refresh();
-	if (!win.log) {
-		this.window.log = function (msg) { logDock.write(msg); };
-	}
-}
 	// Built-in DOM helpers scoped automatically to this panel's document
 	this.byId = function(id) {
 		return self.enhance(doc.getElementById(id));
@@ -153,22 +140,6 @@ if (typeof logDock !== "undefined") {
 
 }
 
-/*
-if (typeof log === "function") {
-	win.log = log;
-}
-Object.prototype._jnPanels = Object.prototype._jnPanels || {};
-Object.prototype._jnPanels[opts.name || "Custom Panel"] = self;
-
-if (typeof logDock !== "undefined") {
-	logDock.refresh();
-	logDock.refresh();
-	if (!win.log) {
-		this.window.log = function (msg) { logDock.write(msg); };
-	}
-}
-*/
-
 // BOOKMARK: TemplateDockablePanel.proto...
 
 TemplateDockablePanel.prototype.show = function() {
@@ -184,13 +155,7 @@ TemplateDockablePanel.prototype.toggleVisibility = function() {
 	else { this.dock.visible = false; }
 };
 
-
 TemplateDockablePanel.prototype.prototype = TemplateDockablePanel.prototype;
-
-TemplateDockablePanel.prototype._jnPanels = TemplateDockablePanel.prototype._jnPanels || {};
-
-TemplateDockablePanel.prototype._jnPanels[TemplateDockablePanel.name || "Custom Panel"] = TemplateDockablePanel;
-
 
 (function() {
 
@@ -224,9 +189,7 @@ TemplateDockablePanel.prototype._jnPanels[TemplateDockablePanel.name || "Custom 
 		return src.slice(src.length - str.length) === str;
 	}
 
-	function sortBookmarks(mode){
-		for (var i in Editor) {alert(i);}
-	}
+	function sortBookmarks(mode){ }
 
 	function createBookmarkElement(bm) {
 		var item = dock.document.createElement("div");
@@ -317,9 +280,6 @@ TemplateDockablePanel.prototype._jnPanels[TemplateDockablePanel.name || "Custom 
 		el.classList.toggle("element-display-none");
 	}
 	
-	function sum(x, y, z) {
-		return x + y + z;
-	}
 // BOOKMARK: showSidebar();	
 	function showSidebar() {
 		if (panel) {
@@ -416,7 +376,7 @@ TemplateDockablePanel.prototype._jnPanels[TemplateDockablePanel.name || "Custom 
 		
 		var menuitemactions = [
 			function(el) {  },
-			function(el) { logDock.write(""); }
+			function(el) {  }
 		];
 		pbMenuItems.on("mouseover", function() {
 			this.classList.add("small-button-hover");
